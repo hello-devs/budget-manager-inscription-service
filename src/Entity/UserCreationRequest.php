@@ -5,26 +5,29 @@ namespace App\Entity;
 use App\Repository\UserCreationRequestRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 
 #[ORM\Entity(repositoryClass: UserCreationRequestRepository::class)]
 class UserCreationRequest
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $verificationCode = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $validationCodeGeneratedAt = null;
-
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $validationTry = null;
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\GeneratedValue]
+        #[ORM\Column]
+        private ?int                $id = null,
+        #[ORM\Column(length: 255)]
+        private ?string             $email = null,
+        #[ORM\Column(type: Types::SMALLINT)]
+        private ?int                $verificationCode = null,
+        #[ORM\Column]
+        private ?\DateTimeImmutable $verificationCodeGeneratedAt = null,
+        #[ORM\Column(type: Types::SMALLINT)]
+        private ?int $verificationTry = null
+    )
+    {
+    }
 
     public function getId(): ?int
     {
@@ -48,33 +51,37 @@ class UserCreationRequest
         return $this->verificationCode;
     }
 
-    public function setVerificationCode(int $verificationCode): self
+    /**
+     * @throws Exception
+     */
+    public function setVerificationCode(): self
     {
-        $this->verificationCode = $verificationCode;
+        $this->verificationCode = random_int(1000, 9999);
+        $this->setVerificationCodeGeneratedAt();
 
         return $this;
     }
 
-    public function getValidationCodeGeneratedAt(): ?\DateTimeImmutable
+    public function getVerificationCodeGeneratedAt(): ?\DateTimeImmutable
     {
-        return $this->validationCodeGeneratedAt;
+        return $this->verificationCodeGeneratedAt;
     }
 
-    public function setValidationCodeGeneratedAt(\DateTimeImmutable $validationCodeGeneratedAt): self
+    public function setVerificationCodeGeneratedAt(): self
     {
-        $this->validationCodeGeneratedAt = $validationCodeGeneratedAt;
+        $this->verificationCodeGeneratedAt = new \DateTimeImmutable();
 
         return $this;
     }
 
-    public function getValidationTry(): ?int
+    public function getVerificationTry(): ?int
     {
-        return $this->validationTry;
+        return $this->verificationTry;
     }
 
-    public function setValidationTry(int $validationTry): self
+    public function setVerificationTry(int $verificationTry): self
     {
-        $this->validationTry = $validationTry;
+        $this->verificationTry = $verificationTry;
 
         return $this;
     }
